@@ -1,0 +1,16 @@
+= bootstrap_form_for @role do |f|
+  - if @role.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@role.errors.count, "error")} prohibited this role from being saved:"
+      %ul
+        - @role.errors.full_messages.each do |msg|
+          %li= msg
+
+  = f.text_field :name
+  .actions
+    = f.submit 'Save'
+    - unless @role.new_record?
+      \|
+      = button_to_show 'Display Role', @role
+    \|
+    = button_to_back 'Back to Roles', roles_path

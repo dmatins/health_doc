@@ -1,0 +1,22 @@
+= bootstrap_form_for [@patient, @presciption] do |f|
+  - if @presciption.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@presciption.errors.count, "error")} prohibited this presciption from being saved:"
+      %ul
+        - @presciption.errors.full_messages.each do |msg|
+          %li= msg
+
+  = f.select :physician_id, User.physicians.pluck(:name, :id), prompt: "Select a Physician"
+  = f.text_field :medication
+  = f.number_field :quantity
+  = f.datetime_select :issue_date
+  = f.datetime_select :expiration_date
+  = f.number_field :renew_count
+  = f.check_box :called_in
+  .actions
+    = f.submit 'Save'   
+    - unless @presciption.new_record?
+      \|
+      = button_to_show 'Display Prescription', [@patient, @presciption]
+    \|
+    = button_to_back 'Back to Patient', @patient 

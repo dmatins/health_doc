@@ -1,0 +1,35 @@
+.card
+  .card-header
+    %h3== #{@record.record_type.name} Details
+    /%h6.card-subtitle.mb-2.text-muted.pull-right= @record.created_at.localtime.to_s(:us_date)
+    %h6.card-subtitle.mb-2.text-muted.pull-right= l @record.created_at.localtime, format: :us
+    %h4.card-subtitle.text-muted= @record.patient.full_name
+  .card-block
+    - @record.record_values.each do |value|
+      %p.card-text
+        %b== #{value.record_field.name}:
+        = render 'record_value', value: value
+
+%br/
+.card
+  %h3.card-header Previous Versions
+  .card-block
+    - @record_history.each do |created_at, versions|
+      .card
+        .card-block
+          %h4.card-title= User.find(versions.first.whodunnit).name
+          %h6.card-subtitle.mb-2.text-muted= l versions.first.created_at.localtime, format: :us
+          - versions.each do |version|
+            - value = version.reify
+            - if value.blank?
+              %p.card-text
+                Newly Created
+            - else
+              %p.card-text
+                %b== #{value.record_field.name}:
+                = render 'records/record_value', value: value
+%br/
+
+= button_to_edit 'Edit Record', edit_patient_record_path(@patient, @record), data: { turbolinks: false }
+\|
+= button_to_back 'Back to Patient', @patient

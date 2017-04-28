@@ -1,0 +1,29 @@
+-# navigation styled for Bootstrap 3.0
+.container
+  %nav.navbar.navbar-toggleable-md.navbar-inverse.bg-inverse
+    %button.navbar-toggler.hidden-sm-up.nav-link{"aria-controls" => "exCollapsingNavbar2", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
+      \ &#9776;
+    %a.navbar-brand{:href => root_path} HealthDoc
+    /= link_to "HealthDoc", root_path, class: "navbar-brand"
+
+    #navbarSupportedContent.collapse.navbar-collapse
+      %ul.navbar-nav.mr-auto
+        = render 'layouts/navigation_links'
+
+      - if user_signed_in?
+        %form.form-inline.my-2.my-lg-0
+          %input.form-control.mr-sm-2{type: "text", placeholder: "Search"}
+          %button.btn.btn-outline-success.my-2.my-sm-0{type: "submit"} Search
+        %div.dropdown
+          %div.btn.btn-link.navbar-text.dropdown-toggle{"data-toggle"=>"dropdown"}
+            = fa_icon "user"
+            = current_user.name
+          %div.dropdown-menu 
+            %a.dropdown-item{:href => destroy_user_session_path,"data-method" => "delete"}Logout
+      - else
+        .my-2
+          = link_to "Login", new_user_session_path
+      
+    /#exCollapsingNavbar2.collapse.navbar-toggleable-xs
+    /  = link_to "Rails bootstrap", root_path, class: 'navbar-brand'
+    /  %ul.nav.navbar-nav= render 'layouts/navigation_links'

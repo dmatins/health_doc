@@ -1,0 +1,53 @@
+= content_for :head do 
+  %meta{name: "turbolinks-cache-control", content: "no-cache"}
+= bootstrap_nested_form_for @record_type do |f|
+  - if @record_type.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@record_type.errors.count, "error")} prohibited this record_type from being saved:"
+      %ul
+        - @record_type.errors.full_messages.each do |msg|
+          %li= msg
+
+  .card
+    %h3.card-header Basic Info
+    .card-block
+      = f.text_field :name
+      = f.text_area :description
+
+  .card
+    %h3.card-header Fields
+    .card-block.record_fields
+      = f.fields_for :record_fields do |nff|
+        .card
+          .card-block
+            = nff.text_field :name
+            = nff.select :field_type, RecordField.field_types.keys, {}, { class: "field_type" }
+            = nff.text_field :allowed_values, class: "allowed_values_field", value: nff.object.allowed_values.to_json, wrapper: { class: "allowed_values", style: "#{"display: none;" unless nff.object.select_box?}" }
+            = nff.number_field :sort
+            = nff.text_field :view_role_ids, class: "magic_suggest", value: nff.object.view_role_ids.to_json
+            = nff.text_field :edit_role_ids, class: "magic_suggest", value: nff.object.edit_role_ids.to_json
+            :javascript
+              current_script = $('script').last();
+              current_script.closest(".card-block").find(".magic_suggest").magicSuggest({
+                data: #{@roles_hash.to_json},
+                useTabKey: true,
+                useCommaKey: true,
+                allowFreeEntries: false
+              });
+
+              current_script.parent().find(".allowed_values_field").magicSuggest({
+                useTabKey: true,
+                useCommaKey: true
+              });
+            = nff.link_to_remove "Remove this Field", {class: "btn btn-danger"}
+      %br/
+      = f.link_to_add "Add a Field", :record_fields, {class: "btn btn-success"}
+  %br/
+  .actions
+    = f.submit 'Save'
+    \|
+    - unless @record_type.new_record?
+      = button_to_show 'Display Record Type', @record_type
+      \|
+    = button_to_back 'Back to Record Types', record_types_path
+

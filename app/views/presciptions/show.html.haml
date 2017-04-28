@@ -1,0 +1,30 @@
+%p#notice= notice
+
+%p
+  %b Patient:
+  = @presciption.patient_id
+%p
+  %b Physician:
+  = @presciption.physician_id
+%p
+  %b Medication:
+  = @presciption.medication
+%p
+  %b Quantity:
+  = @presciption.quantity
+%p
+  %b Issue date:
+  = @presciption.issue_date
+%p
+  %b Expiration date:
+  = @presciption.expiration_date
+%p
+  %b Renew count:
+  = @presciption.renew_count
+%p
+  %b Called in:
+  = @presciption.called_in
+
+= button_to_edit 'Edit Prescription', edit_patient_presciption_path(@patient, @presciption), data: { turbolinks: false }
+\|
+= button_to_back 'Back to Patient', @patient

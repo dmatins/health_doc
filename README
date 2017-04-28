@@ -1,0 +1,12 @@
+Health Doc
+================
+
+1. install RVM - \curl -sSL https://get.rvm.io | bash
+2. rvm install ruby-2.3.0
+3. gem install bundler
+4. If linux then - sudo apt-get install sqlite3 libsqlite3-dev
+5. bundle install --without production
+6. rake db:create - creates database
+7. rake db:migrate - creates tables
+8. rake db:seed - seeds some data
+9. rails s - starts app

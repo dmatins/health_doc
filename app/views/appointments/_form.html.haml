@@ -1,0 +1,26 @@
+= bootstrap_form_for @appointment, remote: true do |f|
+  - if @appointment.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@appointment.errors.count, "error")} prohibited this appointment from being saved:"
+      %ul
+        - @appointment.errors.full_messages.each do |msg|
+          %li= msg
+
+  = f.select :patient_id, Patient.all.map{|p| [p.full_name, p.id]}, { prompt: "Select a Patient" }
+  = f.select :physician_id, User.physicians.pluck(:name, :id)
+  = f.select :record_type_id, RecordType.pluck(:name, :id)
+  = f.text_field :name
+  = f.text_area :description
+  = f.datetime_select :start_time
+  = f.datetime_select :end_time
+  .actions
+    = f.submit 'Save'
+    - unless @appointment.new_record?
+      \|
+      = button_to_destroy "Delete Appointment", @appointment
+      - unless params[:modal]
+        \|
+        = button_to_show 'Display Appointment', @appointment
+    - unless params[:modal]
+      \|
+      = button_to_back 'Back to Appointments', appointments_path

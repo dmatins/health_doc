@@ -1,0 +1,27 @@
+%p#notice= notice
+
+%p
+  %b Patient:
+  = @appointment.patient_id
+%p
+  %b Physician:
+  = @appointment.physician_id
+%p
+  %b Start time:
+  = @appointment.start_time
+%p
+  %b End time:
+  = @appointment.end_time
+%p
+  %b Record type:
+  = @appointment.record_type_id
+%p
+  %b Name:
+  = @appointment.name
+%p
+  %b Description:
+  = @appointment.description
+
+= button_to_edit 'Edit Appointment', edit_appointment_path(@appointment), data: { turbolinks: false }
+\|
+= button_to_back 'Back to Appointments', appointments_path

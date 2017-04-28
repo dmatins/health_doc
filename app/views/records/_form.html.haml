@@ -1,0 +1,44 @@
+= bootstrap_nested_form_for setup_record([@patient, @record]), html: { multipart: true } do |f|
+  - if @record.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@record.errors.count, "error")} prohibited this record from being saved:"
+      %ul
+        - @record.errors.full_messages.each do |msg|
+          %li= msg
+
+  = f.select :record_type_id, RecordType.pluck(:name, :id), prompt: "Select a Record Type"
+
+  = f.fields_for :record_values do |rvf|
+    - next unless rvf.object.can_edit?(current_user)
+    = rvf.hidden_field :record_field_id 
+    - if rvf.object.record_field.string?
+      = rvf.text_field :value, label: rvf.object.record_field.name
+    - elsif rvf.object.record_field.text?
+      = rvf.text_area :value, label: rvf.object.record_field.name
+    - elsif rvf.object.record_field.select_box?
+      = rvf.select :value, rvf.object.record_field.allowed_values, { prompt: "Select One", label: rvf.object.record_field.name }
+    - elsif rvf.object.record_field.checkbox?
+      = rvf.check_box :bool_value, label: rvf.object.record_field.name
+    - elsif rvf.object.record_field.file?
+      = rvf.file_field :file, label: rvf.object.record_field.name
+    - elsif rvf.object.record_field.date?
+      = rvf.date_select :date_value, label: rvf.object.record_field.name
+    - elsif rvf.object.record_field.date_time?
+      = rvf.date_select :date_value, label: rvf.object.record_field.name
+    - else
+      Well...you dun goofed
+
+  = f.datetime_select :administered_at
+
+  .actions
+    = f.submit 'Save'
+    - unless @record.new_record?
+      \|
+      = button_to_show 'Display Record', [@patient, @record]
+    \|
+    = button_to_back 'Back to Patient', @patient
+
+:javascript
+  $('#record_record_type_id').on("change", function() {
+    location = "#{new_patient_record_path}?record_type_id=" + $(this).val();
+  });

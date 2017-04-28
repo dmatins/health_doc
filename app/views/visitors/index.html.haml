@@ -1,0 +1,13 @@
+%div.container
+  %div.jumbotron{ :style => "opacity: 0.8;" }
+    %h1 Welcome to Health Doc
+    %br
+    -if not user_signed_in?
+      =link_to "Sign in", new_user_session_path, class: "btn btn-primary"
+    - if user_signed_in?
+      = link_to "Logout", destroy_user_session_path, method: :delete , class: "btn btn-primary"
+
+:javascript
+  document.body.style.backgroundImage = "url('/assets/doctor.jpg')";
+  document.body.style["background-size"] = "100% 200%";
+  document.body.style["background-repeat"] = "no-repeat";

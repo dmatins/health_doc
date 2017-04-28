@@ -1,0 +1,35 @@
+%p#notice= notice
+
+%p
+  %b Patient:
+  = @invoice.patient.full_name
+%p
+  %b Is billed:
+  = @invoice.is_billed
+%p
+  %b Billed date:
+  = @invoice.billed_date
+
+%h4 Record(s)
+%table.table.table-bordered.table-striped
+  %thead
+    %tr
+      %th Type
+      %th Date
+      %th Time
+  %tbody
+    - @invoice.records.each do |rec|
+      %tr
+        %td
+          = link_to rec.record_type.name, [@invoice.patient, rec]
+          = link_to_edit "", edit_patient_record_path([@invoice.patient, rec])
+          = link_to_destroy "", [@invoice.patient, rec]
+        %td= rec.administered_at.strftime("%Y-%m-%d")
+        %td= rec.administered_at.strftime("%I:%M %p")
+
+
+  
+
+= link_to 'Edit', edit_invoice_path(@invoice)
+\|
+= link_to 'Back', invoices_path

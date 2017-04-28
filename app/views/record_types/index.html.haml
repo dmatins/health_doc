@@ -1,0 +1,29 @@
+%h1 Listing Record Types
+
+%table.table.table-bordered.table-striped
+  %thead
+    %tr
+      %th Name
+      %th Description
+      %th Fields
+
+  %tbody
+    - @record_types.each do |record_type|
+      %tr
+        %td
+          = link_to record_type.name, record_type
+          = link_to_edit "", edit_record_type_path(record_type), data: { turbolinks: false }
+          = link_to_destroy "", record_type
+        %td= record_type.description
+        %td= record_type.record_fields.count
+
+%br
+
+:javascript
+  $(document).ready(function() {
+    $('.table.table.table-bordered.table-striped').DataTable({
+      order: [[ 0, 'asc' ], [ 1, 'asc' ]]
+    });
+  });
+
+= button_to_new 'New Record Type', new_record_type_path

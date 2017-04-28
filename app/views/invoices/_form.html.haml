@@ -1,0 +1,42 @@
+= bootstrap_form_for [@patient, @invoice] do |f|
+  - if @invoice.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@invoice.errors.count, "error")} prohibited this invoice from being saved:"
+      %ul
+        - @invoice.errors.full_messages.each do |msg|
+          %li= msg
+
+  - if !@patient
+    .field
+      = f.label :patient
+      = f.text_field :patient, list: 'patient-name', autocomplete: 'on'
+      %datalist#patient-name
+        - Patient.all.each do |patient|
+          -# If there are many patients in the DB, this will be a problem.
+          -# This generates an option tag for each patient, so the size of the 
+          -# page generated will scale with the number of patients.
+          %option{value: patient.id} #{patient.full_name}
+  = f.check_box :is_billed
+  %table.table.table-bordered.table-striped{style: 'overflow:auto; max-height:200px'}
+    %thead
+      %tr
+        %th Select
+        %th Record id
+        %th Type
+        %th Date
+        %th Time
+    %tbody    
+      - @patient.records.each do |rec|
+        -# not yet on some invoice
+        - if !rec.invoice
+          %tr
+            %td               
+              = f.check_box :record_ids, { multiple: true, style: 'margin: 0 1em', label: "Add to Invoice"}, rec.id, nil
+              /%input{value: rec.id, type: 'checkbox', style: 'margin: 0 1em'} Add to Invoice              
+            %td #{rec.id}
+            %td #{rec.record_type.name}
+            %td #{rec.administered_at.strftime("%Y-%m-%d")}
+            %td #{rec.administered_at.strftime("%I:%M %p")}
+
+  .actions
+    = f.submit 'Save'

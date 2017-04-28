@@ -1,0 +1,149 @@
+%h1 Appointments
+
+#appt-modal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h5.modal-title Test
+        %button.close{type: "button", data: { dismiss: "modal" }, aria: { label: "Close" }}
+          %span{aria: {hidden: true}} &times;
+      .modal-body
+        Temp stuff
+      .modal-footer
+        %button.btn.btn-primary{data: {dismiss: "modal"}} Close
+
+#calendar
+
+:javascript
+  //$("#appt-modal").dialog({
+  //  autoOpen: false,
+  //  height: 500,
+  //  width: 500,
+  //  modal: true,
+  //  scrollable: false,
+  //  buttons: {
+  //    Cancel: function() {
+  //      $(this).dialog("close");
+  //    }
+  //  },
+  //  close: function() {
+  //    $(this).dialog("close");
+  //  }
+  //});
+
+  $("#appt-modal").modal({
+    show: false
+  });
+
+  $('#calendar').fullCalendar({
+    //events: eventObjects,
+    slotEventOverlap: false,
+    buttonText: {
+      today: 'Today',
+      month: 'Month',
+      week: 'Week',
+      day: 'Day'
+    },
+    header: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'month,agendaWeek,agendaDay'
+    },
+    editable: true,
+    selectable: true,
+    selectHelper: true,  
+    allDaySlot: false,
+    defaultView: 'month',
+    height: 750,
+    slotMinutes: 30,
+    timeFormat: 'h:mm',
+    dragOpacity: "0.5",
+    eventSources: ['#{appointments_path(format: :json)}'],
+    dayClick: function(date, jsEvent, view) {
+      $("#calendar").fullCalendar('changeView', 'agendaDay');
+      $("#calendar").fullCalendar('gotoDate', date);
+    },
+    eventClick: function(cal_event, jsEvent, view) {
+      $('#appt-modal .modal-title').html("Editing Event: " + cal_event.title);
+      $('#appt-modal').modal("show");
+      $.ajax({
+        url: "#{appointments_path}/" + cal_event.id + "/edit?modal=true",
+        dataType: 'script'
+      });
+      return false
+    },
+    eventDrop: function(cal_event, dayDelta, minuteDelta, allDay, revertFunc) {
+      updateAppointment(cal_event);
+      return false;
+    },
+    eventResize: function(cal_event) {
+      updateAppointment(cal_event);
+      return false;
+    },
+    select: function(start_date, end_date, all_day, view) {
+      if (start_date._d != end_date._d) {
+        $("#appt-modal .modal-title").html("New Event");
+        var all_day_event = false;
+        if (view.name == "month") {
+          return false;
+        }
+        $.ajax({
+          url: "#{new_appointment_path}?modal=true",
+          data: { start_time: start_date._d, end_time: end_date._d },
+          dataType: 'script'
+        });
+        if (confirm("Do you want to create a new event?")) {
+          $("#appt-modal").modal("show");
+        }
+      }
+      return false;
+    }
+  });
+
+  $(document).ready(function() {
+    $('.table.table.table-bordered.table-striped').DataTable({
+      order: [[2,'asc'], [ 3, 'asc' ]]
+    });
+  });
+
+  function updateAppointment(cal_event) {
+    $.ajax({
+      url: "#{appointments_path}/" + cal_event.id,
+      method: "put",
+      beforeSend: function(xhr) { xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content')) },
+      dataType: 'script',
+      data: { event: { start_time: cal_event.start, end_time: cal_event.end } }
+    });
+    return false;
+  }
+
+%br
+
+%table.table.table-bordered.table-striped
+  %thead
+    %tr
+      %th Name
+      %th Patient
+      %th Physician
+      %th Record type
+      %th Start time
+      %th End time
+      %th Description
+
+  %tbody
+    - @appointments.each do |appointment|
+      %tr
+        %td
+          = link_to appointment.name, appointment
+          = link_to_edit "", edit_appointment_path(appointment)
+          = link_to_destroy "", appointment
+        %td= link_to appointment.patient.full_name, appointment.patient
+        %td= link_to appointment.physician.name, appointment.physician
+        %td= appointment.record_type.name
+        %td= l appointment.start_time.localtime, format: :us
+        %td= l appointment.end_time.localtime, format: :us
+        %td= appointment.description
+
+%br
+= button_to_new "New Appointment", new_appointment_path
+

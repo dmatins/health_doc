@@ -1,0 +1,26 @@
+%h1 Listing invoices
+
+%table.table.table-bordered.table-striped
+  %thead
+    %tr
+      %th
+      %th Patient
+      %th Is billed
+      %th Billed date
+      
+
+  %tbody
+    - @invoices.each do |invoice|
+      %tr
+        %td{width: '80px'}
+          = link_to_show '', [invoice.patient, invoice]
+          = link_to_edit '', edit_invoice_path(invoice)
+          = link_to_destroy '', [invoice.patient, invoice], :method => :delete, :data => { :confirm => 'Are you sure?' }
+        %td= link_to invoice.patient.full_name, invoice.patient
+        %td= invoice.is_billed
+        %td= invoice.billed_date
+      
+%br
+
+- if @patient
+  = link_to 'New Invoice', new_patient_invoice_path(@patient)

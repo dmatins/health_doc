@@ -1,0 +1,18 @@
+= bootstrap_nested_form_for [@record_type, @record_field] do |f|
+  - if @record_field.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@record_field.errors.count, "error")} prohibited this record_field from being saved:"
+      %ul
+        - @record_field.errors.full_messages.each do |msg|
+          %li= msg
+
+  = f.select :record_type_id, RecordType.pluck(:name, :id), prompt: "Select a Record Type"
+  = f.text_field :name
+  = f.select :field_type, RecordField.field_types.keys
+  = f.fields_for :allowed_values do |avf|
+    = avf.text_field :value
+    = avf.link_to_remove "Remove this Value"
+  /= f.link_to_add "Add a Value", :allowed_values
+
+  .actions
+    = f.submit 'Save'

@@ -1,0 +1,15 @@
+- if %w(string text select_box).include? value.record_field.field_type 
+  = value.value 
+- elsif value.record_field.checkbox? 
+  = value.bool_value ? "Yes" : "No" 
+- elsif value.record_field.file? 
+  - if value.file.exists? 
+    = link_to value.file_file_name, value.file.url 
+  - else 
+    = image_tag "image-missing-md.png" 
+- elsif value.record_field.date? 
+  = value.date_value.to_date 
+- elsif value.record_field.date_time? 
+  = value.date_value
+- else
+  Well...you dun goofed.

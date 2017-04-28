@@ -1,0 +1,13 @@
+.container
+  .row
+    %h3 Users
+  - @users_by_role.each do |role, users|
+    .row
+      .card
+        %h5.card-header= role.name.titleize.pluralize
+        .card-block
+          %table.table
+            %tbody
+              - users.each do |user|
+                %tr
+                  = render user

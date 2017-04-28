@@ -1,0 +1,9 @@
+-# Partial for an anchor that collapses some content by name
+-# The name passed will be used to target an element with an id generated from the name
+-# where spaces are replaced with '-' characters.
+- target = name.gsub(' ', '-').downcase
+.card
+  = link_to "#" + target, data: { toggle: "collapse" }, class: 'no-decoration' do
+    %h3.collapse-card-header #{name}
+  .card-block.collapse.show{id: target}
+    = yield

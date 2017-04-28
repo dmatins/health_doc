@@ -1,0 +1,120 @@
+= render "shared/collapsible_card", name: "Personal Info" do
+  %p
+    %b First name:
+    = @patient.first_name
+  %p
+    %b Middle name:
+    = @patient.middle_name
+  %p
+    %b Last name:
+    = @patient.last_name
+  %p
+    %b Gender:
+    = @patient.gender
+  %p
+    %b Dob:
+    = @patient.dob
+  %p
+    %b Email:
+    = @patient.email
+%br/
+= render "shared/collapsible_card", name: "Home Address" do
+  %p
+    %b Street:
+    = @patient.street
+  %p
+    %b Zip:
+    = @patient.zip
+  %p
+    %b City:
+    = @patient.city
+  %p
+    %b State:
+    = @patient.state
+
+%br/
+= render "shared/collapsible_card", name: "Insurance Info" do
+  %p
+    %b Insurance: 
+    = @patient.insurance
+  %p
+    %b Group Num:
+    = @patient.group_num
+  %p
+    %b Identification Num:
+    = @patient.id_num
+
+%br/
+= render "shared/collapsible_card", name: "Prescriptions" do
+  - @patient.presciptions.each do |prescription|
+    .card
+      .card-block
+        %h4.card-title= prescription.medication
+        %p
+          %b Physician:
+          = prescription.physician.try(:name)
+        %p
+          %b Issue Date:
+          = prescription.issue_date
+        %p
+          %b Expiration Date:
+          = prescription.expiration_date
+        %p
+          %b Quantity:
+          = prescription.quantity
+        %p
+          %b Renew Count:
+          = prescription.renew_count
+        %p
+          %b Called In:
+          = prescription.called_in
+        = button_to_edit "Edit Prescription", edit_patient_presciption_path(@patient, prescription), class: "btn btn-warning card-link"
+  %br/
+  = button_to_new "New Prescription", new_patient_presciption_path(@patient)
+
+%br/
+
+= render "shared/collapsible_card", name: "Records" do
+  - @patient.records.each do |record|
+    .card
+      .card-block
+        %h4.card-title= record.record_type.try(:name)
+        %h6.card-subtitle.mb-2.text-muted.pull-right= l record.created_at.localtime, format: :us
+        %h6.card-subtitle.mb-2.text-muted= record.record_type.try(:description)
+        - record.record_values.each do |value|
+          - next unless value.can_view?(current_user)
+          %p.card-text
+            %b== #{value.record_field.name}:
+            = render 'records/record_value', value: value
+        = button_to_show "Show Record History", [@patient, record]
+        = button_to_edit "Edit Record", edit_patient_record_path(@patient, record)
+  %br/
+  = button_to_new "New Record", new_patient_record_path(@patient)
+
+%br/
+= render "shared/collapsible_card", name: "Invoices" do
+  %table.table.table-bordered.table-striped
+    %thead
+      %tr
+        %th
+        %th Records
+        %th Is billed
+        %th Billed Date
+    %tbody
+      - @patient.invoices.each do |invoice|
+        %tr
+          %td{width: '80px'}
+            = link_to_show '', [@patient, invoice]
+            = link_to_edit '', edit_patient_invoice_path(@patient, invoice)
+            = link_to_destroy '', [invoice.patient, invoice]
+          %td= invoice.records.flat_map(&:record_type).map(&:name).join(", ")
+          %td= invoice.is_billed? ? "Yes" : "No"
+          %td
+            - if invoice.billed_date
+              = l invoice.billed_date.try(:localtime), format: :us
+  %br/
+  = button_to_new "New Invoice", new_patient_invoice_path(@patient)
+%br/
+= button_to_edit 'Edit Patient', edit_patient_path(@patient), data: { turbolinks: false }
+\|
+= button_to_back 'Back to Patients', patients_path

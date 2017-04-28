@@ -1,0 +1,25 @@
+%h1 Listing Records
+
+%table.table.table-bordered.table-striped
+  %thead
+    %tr
+      %th Patient
+      %th Record type
+      %th Date
+      %th
+      %th
+      %th
+
+  %tbody
+    - @records.each do |record|
+      %tr
+        %td= record.patient_id
+        %td= record.record_type_id
+        %td= record.administered_at
+        %td= link_to 'Show', record
+        %td= link_to 'Edit', edit_record_path(record)
+        %td= link_to 'Destroy', record, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Record', new_record_path

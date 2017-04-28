@@ -1,0 +1,25 @@
+%h1 Listing record_fields
+
+%table.table.table-bordered.table-striped
+  %thead
+    %tr
+      %th Record Type
+      %th Name
+      %th Field Type
+      %th
+      %th
+      %th
+
+  %tbody
+    - @record_fields.each do |record_field|
+      %tr
+        %td= link_to record_field.record_type.name, record_field
+        %td= link_to record_field.name, record_field
+        %td= record_field.field_type
+        %td= link_to 'Show', record_field
+        %td= link_to 'Edit', edit_record_field_path(record_field)
+        %td= link_to 'Destroy', record_field, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Record field', new_record_field_path

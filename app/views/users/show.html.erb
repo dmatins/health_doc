@@ -1,0 +1,13 @@
+<h3>User</h3>
+<p>Name: <%= @user.name if @user.name %></p>
+<p>Email: <%= @user.email if @user.email %></p>
+<p>Date of Birth: <%= @user.dob if @user.dob %></p>
+<p>Hire Date: <%= @user.hire_date if @user.hire_date %></p>
+
+<h5>Address</h5>
+<div class="card-block">
+  <p>Street: <%= @user.street if @user.street %></p>
+  <p>City: <%= @user.city if @user.city %></p>
+  <p>State: <%= @user.state if @user.state %></p>
+  <p>Zip: <%= @user.zip if @user.zip %></p>
+</div>

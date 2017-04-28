@@ -1,0 +1,48 @@
+.card
+  %h3.card-header Record Type Details
+  .card-block
+    %p
+      %b Name:
+      = @record_type.name
+    %p
+      %b Description:
+      = @record_type.description
+
+%br/
+.card
+  %h3.card-header Fields
+  .card-block
+    %p Drag 'n drop fields to change their positions.
+    %table.table.table-bordered.table-striped
+      %thead
+        %tr
+          %th Name
+          %th Field Type
+          %th Viewing Roles
+          %th Admin Roles
+
+      %tbody.sortable
+        - @record_type.record_fields.each do |record_field|
+          %tr{id: record_field.id}
+            %td= record_field.name
+            %td= record_field.field_type
+            %td= record_field.view_role_names.join(", ")
+            %td= record_field.edit_role_names.join(", ")
+
+:javascript
+  $(".sortable").sortable({
+    update: function(event, ui){
+      $.ajax({
+        method: "post",
+        url: "#{update_sort_position_record_type_path(@record_type)}", 
+        dataType: "script",
+        data: {ids: $(this).sortable("toArray")}
+      });
+      return true;
+    }
+  });
+
+%br/
+= button_to_edit 'Edit Record Type', edit_record_type_path(@record_type), data: { turbolinks: false }
+\|
+= button_to_back 'Back to Record Types', record_types_path
